@@ -1,4 +1,4 @@
-module golang-htmx
+module mlibrary-htmx
 
 go 1.21.0
 

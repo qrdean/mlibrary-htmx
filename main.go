@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"time"
 
-	"golang-htmx/pkg/database"
+	"mlibrary-htmx/pkg/database"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
