@@ -1,0 +1,21 @@
+{{block "upload" .}}
+<!DOCTYPE html>
+<html lang="en">
+  {{template "header" .}}
+  <body>
+    {{template "nav" .}}
+    <div class="container">
+      <p>
+        <a href='/download'>Download Template</a>
+      </p>
+      <form hx-encoding='multipart/form-data' hx-post='/upload'
+        _='on htmx:xhr:progress(loaded, total) set #progress.value to (loaded/total)*100'>
+        <label for="file" >Upload File Here</label>
+        <input type='file' name='file'>
+        <button class="button-primary">Upload</button>
+        <progress id='progress' value='0' max='100'></progress>
+      </form>
+    </div>
+  </body>
+</html>
+{{end}}

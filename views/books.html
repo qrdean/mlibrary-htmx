@@ -1,0 +1,179 @@
+{{block "books" .}}
+<!DOCTYPE html>
+<html lang="en">
+  {{template "header" .}}
+  <body>
+    {{template "nav" .}}
+    <div class="container">
+      <form>
+        <div style="display: flex; flex-flow: row wrap; gap: 10px">
+          <div>
+            <label for="search">Search For Books</label>
+            <input id="search" type="search" name="q" {{if .Params}}value="{{.Params.search}}"{{end}}
+                   hx-get="/books"
+                   hx-trigger="search, keyup delay:200ms changed"
+                   hx-target="#books"
+                   hx-push-url="true"/>
+          </div>
+          <div>
+            <label for="sort-by">Sort</label>
+            <select id="sort-by" name="sort-by" hx-get="/books" hx-target="#books">
+              <option value="">--SELECT--</option>
+              <option value="isbn">ISBN</option>
+              <option value="lccn">LCCN</option>
+              <option value="title">Title</option>
+              <option value="author">Author</option>
+            </select>
+          </div>
+        </div>
+      </form>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Isbn</th>
+            <th>Lccn</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Publish Date</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="books">
+          {{template "book" .}}
+        </tbody>
+      </table>
+      <div>
+        <span style="float:right">
+          {{ if gt .Params.page 1 }}
+          <a id="prev" href="/books?page={{ .Params.prev }}">Previous</a>
+          {{ end }}
+          {{ $length := len .Books }}{{ if eq $length 25 }}
+          <a id="next" href="/books?page={{ .Params.next }}">Next</a>
+          {{ end }}
+        </span>
+      </div>
+    </div>
+  </body>
+</html>
+{{end}}
+
+{{block "book" .}}
+  {{range .Books}}
+  <tr>
+    <td class="table-data">{{.Isbn}}</td>
+    <td class="table-data">{{.Lccn}}</td>
+    <td class="table-data">{{.Title}}</td>
+    <td class="table-data">{{.Author}}</td>
+    <td class="table-data">{{.CopyrightDate.Format "01/02/2006"}}</td>
+    <td class="table-nav"><a href="/books/{{.Id}}">Edit</a></td>
+    <td class="table-nav"><a href="/books/show/{{.Id}}">Show</a></td>
+  </tr>
+  {{end}}
+{{end}}
+
+{{block "show-book" .}}
+<!DOCTYPE html>
+<html lang="en">
+  {{template "header" .}}
+  <body>
+    {{template "nav" .}}
+    <div class="container">
+      <img src="https://covers.openlibrary.org/b/isbn/9780385533225-M.jpg" />
+      <div>{{.Book.Isbn}}</div>
+      <div>{{.Book.Lccn}}</div>
+      <div>{{.Book.Title}}</div>
+      <div>{{.Book.Author}}</div>
+      <div>{{.Book.Publisher}}</div>
+      <div>{{.Book.Location}}</div>
+      <div>{{.Book.Genre}}</div>
+      <div>{{.Book.Pages}}</div>
+      <div>{{.Book.CopyrightDate.Format "01/02/2006"}}</div>
+    </div>
+  </body>
+</html>
+{{end}}
+
+{{block "new-book" .}}
+<!DOCTYPE html>
+<html lang="en">
+  {{template "header" .}}
+  <body>
+    {{template "nav" .}}
+    <div class="container">
+      <form hx-target="#form" {{if .Existing}} hx-put="/books/new/{{.Book.Id}}" {{else}} hx-post="/books/new" {{end}}>
+        {{template "new-book-template" .}}
+        <p>
+          <button class="button-primary" type="submit">{{if .Existing}}Update{{else}}Create{{end}}</button>
+        </p>
+      </form>
+      {{if .Existing}}
+      <button class="button-warn" hx-delete="/books/{{.Book.Id}}"
+              hx-target="body"
+              hx-confirm="Are you sure you want to delete this book?"
+              hx-push-url="true">
+        Delete Book</button>
+      {{end}}
+    </div>
+  </body>
+</html>
+{{end}}
+
+{{block "new-book-template" .}}
+<div id="form">
+  {{if .Message}}
+  <div class="ontop fade-out">{{.Message}}</div>
+  {{end}}
+  <p>
+    <label for="isbn">Isbn</label>
+    <input name="isbn" type="text" {{if .Book}} value="{{.Book.Isbn}}" {{end}} placeholder="1234"/>
+    {{ if .Errors.isbn }}
+    <div class="error-text">{{ .Errors.isbn }}</div>
+    {{end}}
+  </p>
+  <p>
+    <label for="lccn">Lccn</label>
+    <input name="lccn" type="text" {{if .Book}} value="{{.Book.Lccn}}" {{end}} placeholder="4566"/>
+    {{ if .Errors.lccn }}
+    <div class="error-text">{{ .Errors.lccn }}</div>
+    {{end}}
+  </p>
+  <p>
+    <label for="author" >Author</label>
+    <input name="author" type="text" {{if .Book}} value="{{.Book.Author}}" {{end}} placeholder="J.R.R. Tolkien"/>
+    {{ if .Errors.author }}
+    <div class="error-text">{{ .Errors.author }}</div>
+    {{end}}
+  </p>
+  <p>
+    <label for="title" >Title</label>
+    <input name="title" type="text" {{if .Book}} value="{{.Book.Title}}" {{end}} placeholder="The Lord of the Rings"/>
+    {{ if .Errors.title }}
+    <div class="error-text">{{ .Errors.title }}</div>
+    {{end}}
+  </p>
+  <p>
+    <label for="publisher">Publisher</label>
+    <input name="publisher" type="text" {{if .Book}} value="{{.Book.Publisher}}" {{end}} placeholder="Penguin"/>
+  </p>
+  <p>
+    <label for="location">Publishing Location</label>
+    <input name="location" type="text" {{if .Book}} value="{{.Book.Location}}" {{end}} placeholder="London"/>
+  </p>
+  <p>
+    <label for="genre">Genre</label>
+    <input name="genre" type="text" {{if .Book}} value="{{.Book.Genre}}" {{end}} placeholder="Fiction"/>
+  </p>
+  <p>
+    <label for="pages">Pages</label>
+    <input name="pages" type="text" {{if .Book}} value="{{.Book.Pages}}" {{end}} placeholder="400"/>
+  </p>
+  <p>
+    <label for="copyright-date">Copyright Date</label>
+    <input name="copyright-date" type="date" {{if .Book}} value="{{.Book.CopyrightDateString}}" {{end}} />
+    {{ if .Errors.publish_date }}
+    <div class="error-text">{{ .Errors.publish_date }}</div>
+    {{end}}
+  </p>
+</div>
+{{end}}
