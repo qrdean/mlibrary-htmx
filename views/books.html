@@ -79,16 +79,20 @@
   <body>
     {{template "nav" .}}
     <div class="container">
-      <img src="https://covers.openlibrary.org/b/isbn/9780385533225-M.jpg" />
-      <div>{{.Book.Isbn}}</div>
-      <div>{{.Book.Lccn}}</div>
-      <div>{{.Book.Title}}</div>
-      <div>{{.Book.Author}}</div>
-      <div>{{.Book.Publisher}}</div>
-      <div>{{.Book.Location}}</div>
-      <div>{{.Book.Genre}}</div>
-      <div>{{.Book.Pages}}</div>
-      <div>{{.Book.CopyrightDate.Format "01/02/2006"}}</div>
+      {{if .Book.Isbn}}
+        {{if ne .Book.Isbn "0"}}
+          <img src="https://covers.openlibrary.org/b/isbn/{{.Book.Isbn}}-M.jpg" />
+        {{end}}
+      {{end}}
+      <div>Isbn: {{.Book.Isbn}}</div>
+      <div>Lccn: {{.Book.Lccn}}</div>
+      <div>Title: {{.Book.Title}}</div>
+      <div>Author: {{.Book.Author}}</div>
+      <div>Publisher: {{.Book.Publisher}}</div>
+      <div>Publishing Location: {{.Book.Location}}</div>
+      <div>Genre:{{.Book.Genre}}</div>
+      <div># of Pages: {{.Book.Pages}}</div>
+      <div>Copyright Date: {{.Book.CopyrightDate.Format "01/02/2006"}}</div>
     </div>
   </body>
 </html>
