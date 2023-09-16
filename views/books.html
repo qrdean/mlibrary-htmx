@@ -22,7 +22,7 @@
               <option value="isbn">ISBN</option>
               <option value="lccn">LCCN</option>
               <option value="title">Title</option>
-              <option value="author">Author</option>
+              <option value="author_last">Author</option>
             </select>
           </div>
         </div>
@@ -64,7 +64,7 @@
     <td class="table-data">{{.Isbn}}</td>
     <td class="table-data">{{.Lccn}}</td>
     <td class="table-data">{{.Title}}</td>
-    <td class="table-data">{{.Author}}</td>
+    <td class="table-data">{{.AuthorFirst}} {{.AuthorLast}}</td>
     <td class="table-data">{{.CopyrightDate.Format "01/02/2006"}}</td>
     <td class="table-nav"><a href="/books/{{.Id}}">Edit</a></td>
     <td class="table-nav"><a href="/books/show/{{.Id}}">Show</a></td>
@@ -87,7 +87,7 @@
       <div>Isbn: {{.Book.Isbn}}</div>
       <div>Lccn: {{.Book.Lccn}}</div>
       <div>Title: {{.Book.Title}}</div>
-      <div>Author: {{.Book.Author}}</div>
+      <div>Author: {{.Book.AuthorFirst}} {{.Book.AuthorLast}}</div>
       <div>Publisher: {{.Book.Publisher}}</div>
       <div>Publishing Location: {{.Book.Location}}</div>
       <div>Genre:{{.Book.Genre}}</div>
@@ -143,10 +143,14 @@
     {{end}}
   </p>
   <p>
-    <label for="author" >Author</label>
-    <input name="author" type="text" {{if .Book}} value="{{.Book.Author}}" {{end}} placeholder="J.R.R. Tolkien"/>
-    {{ if .Errors.author }}
-    <div class="error-text">{{ .Errors.author }}</div>
+    <label for="author-first">Author First Name</label>
+    <input name="author-first" type="text" {{if .Book}} value="{{.Book.AuthorFirst}}" {{end}} placeholder="J.R.R."/>
+  </p>
+  <p>
+    <label for="author-last">Author Last Name</label>
+    <input name="author-last" type="text" {{if .Book}} value="{{.Book.AuthorLast}}" {{end}} placeholder="Tolkien"/>
+    {{ if .Errors.author_last }}
+    <div class="error-text">{{ .Errors.author_last }}</div>
     {{end}}
   </p>
   <p>

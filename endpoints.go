@@ -81,7 +81,7 @@ func GetAllBooks(c echo.Context) error {
 			fmt.Println("sort param", sortParam)
 			books, err := sort_and_paginate_books(page, sortParam)
 			if err != nil {
-        c.Logger().Error(err)
+				c.Logger().Error(err)
 				return err
 			}
 
@@ -128,7 +128,7 @@ func GetAllBooks(c echo.Context) error {
 	if c.Request().Header.Get("HX-Trigger") == "search" {
 		books, err := paginate_books(page)
 		if err != nil {
-      c.Logger().Error(err)
+			c.Logger().Error(err)
 			return err
 		}
 
@@ -143,7 +143,7 @@ func GetAllBooks(c echo.Context) error {
 
 	books, err := paginate_books(page)
 	if err != nil {
-    c.Logger().Error(err)
+		c.Logger().Error(err)
 		return err
 	}
 
@@ -190,15 +190,16 @@ func HandleExistingBook(c echo.Context) error {
 
 func CreateNewBook(c echo.Context) error {
 	newBook := database.Book{
-		Isbn:      c.FormValue("isbn"),
-		Lccn:      c.FormValue("lccn"),
-		Title:     c.FormValue("title"),
-		Author:    c.FormValue("author"),
-		Publisher: c.FormValue("publisher"),
-		Location:  c.FormValue("location"),
-		Genre:     c.FormValue("genre"),
-		Pages:     c.FormValue("pages"),
-		Id:        -1,
+		Isbn:        c.FormValue("isbn"),
+		Lccn:        c.FormValue("lccn"),
+		Title:       c.FormValue("title"),
+		AuthorFirst: c.FormValue("author-first"),
+		AuthorLast:  c.FormValue("author-last"),
+		Publisher:   c.FormValue("publisher"),
+		Location:    c.FormValue("location"),
+		Genre:       c.FormValue("genre"),
+		Pages:       c.FormValue("pages"),
+		Id:          -1,
 	}
 
 	if c.FormValue("copyright-date") == "" {
@@ -254,15 +255,16 @@ func UpdateExistingBook(c echo.Context) error {
 		return err
 	}
 	newBook := database.Book{
-		Isbn:      c.FormValue("isbn"),
-		Lccn:      c.FormValue("lccn"),
-		Title:     c.FormValue("title"),
-		Author:    c.FormValue("author"),
-		Publisher: c.FormValue("publisher"),
-		Location:  c.FormValue("location"),
-		Genre:     c.FormValue("genre"),
-		Pages:     c.FormValue("pages"),
-		Id:        id,
+		Isbn:        c.FormValue("isbn"),
+		Lccn:        c.FormValue("lccn"),
+		Title:       c.FormValue("title"),
+		AuthorFirst: c.FormValue("author-first"),
+		AuthorLast:  c.FormValue("author-last"),
+		Publisher:   c.FormValue("publisher"),
+		Location:    c.FormValue("location"),
+		Genre:       c.FormValue("genre"),
+		Pages:       c.FormValue("pages"),
+		Id:          id,
 	}
 	if c.FormValue("copyright-date") == "" {
 		errorMap := make(map[string]string)
@@ -426,30 +428,33 @@ func handleBookUpload(filename string) error {
 					bookRow.Title = field
 				}
 				if j == 3 {
-					bookRow.Author = field
+					bookRow.AuthorFirst = field
 				}
 				if j == 4 {
+					bookRow.AuthorLast = field
+				}
+				if j == 5 {
 					if field != "" {
 						layout := "01-02-2006"
 						publish_date, err := time.Parse(layout, field)
 						if err != nil {
 							fmt.Println(err)
-              bookRow.CopyrightDate = time.Time{}
-            } else {
-              bookRow.CopyrightDate = publish_date
-            }
+							bookRow.CopyrightDate = time.Time{}
+						} else {
+							bookRow.CopyrightDate = publish_date
+						}
 					}
 				}
-				if j == 5 {
+				if j == 6 {
 					bookRow.Publisher = field
 				}
-				if j == 6 {
+				if j == 7 {
 					bookRow.Location = field
 				}
-				if j == 7 {
+				if j == 8 {
 					bookRow.Genre = field
 				}
-				if j == 8 {
+				if j == 9 {
 					bookRow.Pages = field
 				}
 			}
